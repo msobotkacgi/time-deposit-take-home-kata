@@ -9,4 +9,8 @@ import java.util.List;
  * is unchanged because its shape is shared with the interest calculation.
  */
 public record TimeDeposit(int id, String planType, BigDecimal balance, int days, List<Withdrawal> withdrawals) {
+
+    public TimeDeposit withBalance(BigDecimal balance) {
+        return new TimeDeposit(id, planType, balance, days, withdrawals);
+    }
 }

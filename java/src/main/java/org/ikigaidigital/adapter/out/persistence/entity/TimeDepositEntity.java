@@ -48,6 +48,10 @@ public class TimeDepositEntity {
         return balance;
     }
 
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
+    }
+
     public List<WithdrawalEntity> getWithdrawals() {
         return withdrawals;
     }
