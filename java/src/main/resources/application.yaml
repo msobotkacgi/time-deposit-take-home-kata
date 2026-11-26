@@ -16,3 +16,5 @@ spring:
       hibernate.globally_quoted_identifiers: true
   flyway:
     locations: classpath:db/migration
+springdoc:
+  packages-to-scan: org.ikigaidigital.adapter.in.web

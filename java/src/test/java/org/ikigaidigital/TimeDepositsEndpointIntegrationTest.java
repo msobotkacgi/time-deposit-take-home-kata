@@ -17,6 +17,8 @@ import java.sql.SQLException;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -150,6 +152,24 @@ class TimeDepositsEndpointIntegrationTest extends TimeDepositDatabase {
         mockMvc.perform(get("/time-deposits"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(updated, true));
+    }
+
+    @Test
+    void publishesSwaggerDocumentationForTheController() throws Exception {
+        mockMvc.perform(get("/v3/api-docs"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.info.title").value("XA Bank Time Deposit API"))
+                .andExpect(jsonPath("$.paths['/time-deposits'].get.operationId").value("listTimeDeposits"))
+                .andExpect(jsonPath("$.paths['/time-deposits'].get.tags[0]").value("Time deposits"))
+                .andExpect(jsonPath("$.paths['/time-deposits/balance-updates'].post.operationId")
+                        .value("updateTimeDepositBalances"))
+                .andExpect(jsonPath("$.components.schemas.TimeDeposit.properties.balance.type").value("string"))
+                .andExpect(jsonPath("$.components.schemas.TimeDeposit.properties.balance.format").value("decimal"))
+                .andExpect(jsonPath("$.components.schemas.Withdrawal.properties.amount.format").value("decimal"))
+                .andExpect(jsonPath("$.components.schemas.Withdrawal.properties.date.format").value("date"));
+        mockMvc.perform(get("/swagger-ui.html"))
+                .andExpect(status().isFound())
+                .andExpect(redirectedUrl("/swagger-ui/index.html"));
     }
 
     private static void restore(PreparedStatement statement, int id, String balance) throws SQLException {
